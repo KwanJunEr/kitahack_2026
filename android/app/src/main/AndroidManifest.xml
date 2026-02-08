@@ -1,10 +1,12 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" 
+      package="com.example.kitahack2026"
+    >
     <application
         android:label="kitahack_2026"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.kitahack_2026.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:taskAffinity=""
