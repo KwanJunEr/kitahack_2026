@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:kitahack_2026/features/onboarding/screens/onboarding_screen.dart';
 import 'package:kitahack_2026/features/welcome/presentation/welcome_screen.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
       routes:{
         '/': (context) => const SplashScreen(),
         '/welcome': (context) => const WelcomeScreen(),
+        '/onboarding' : (context) => const OnboardingScreen(),
       }
     );
   }

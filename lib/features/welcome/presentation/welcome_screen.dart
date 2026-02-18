@@ -24,20 +24,20 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       duration: const Duration(milliseconds: 1200),
     );
 
-    _imageFade = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _imageFade = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _textSlide = Tween<Offset>(
       begin: const Offset(0, 0.4),
       end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
-    _buttonScale = Tween<double>(begin: 0.9, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
-    );
+    _buttonScale = Tween<double>(
+      begin: 0.9,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
 
     _controller.forward();
   }
@@ -104,11 +104,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               /// Indicator
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _dot(true),
-                  _dot(false),
-                  _dot(false),
-                ],
+                children: [_dot(true), _dot(false), _dot(false)],
               ),
 
               const SizedBox(height: 32),
@@ -120,7 +116,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   width: double.infinity,
                   height: 58,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/onboarding');
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0E6B6B),
                       shape: RoundedRectangleBorder(
