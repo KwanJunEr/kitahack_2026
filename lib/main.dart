@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:kitahack_2026/features/home/presentation/pages/home_screen.dart';
+import 'package:kitahack_2026/features/welcome/presentation/welcome_screen.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'features/splash_screen/presentation/splash_screen.dart';
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       initialRoute: "/",
       routes:{
         '/': (context) => const SplashScreen(),
-        '/welcome': (context) => const HomeScreen(title: "Welcome",),
+        '/welcome': (context) => const WelcomeScreen(),
       }
     );
   }
