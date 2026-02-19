@@ -148,7 +148,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               const SizedBox(height: 20),
 
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, '/sign-in');
+                },
                 child: const Text(
                   'Already a member? Sign in',
                   style: TextStyle(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:kitahack_2026/features/auth/presentation/signin_screen.dart';
+import 'package:kitahack_2026/features/auth/presentation/signup_screen.dart';
 import 'package:kitahack_2026/features/onboarding/screens/onboarding_screen.dart';
 import 'package:kitahack_2026/features/welcome/presentation/welcome_screen.dart';
 import 'firebase_options.dart';
@@ -31,6 +33,8 @@ class MyApp extends StatelessWidget {
         '/': (context) => const SplashScreen(),
         '/welcome': (context) => const WelcomeScreen(),
         '/onboarding' : (context) => const OnboardingScreen(),
+        '/sign-in' : (context) => const SignInScreen(),
+        '/sign-up' : (context) => const SignUpScreen()
       }
     );
   }
