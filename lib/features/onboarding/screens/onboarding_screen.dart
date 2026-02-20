@@ -37,7 +37,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           "Get hyper-personalized crop recommendations, cost estimates, and predicted yields based on your skill level.",
     ),
     _OnboardingData(
-      image: "assets/images/onboarding4.png",
+      image: "assets/images/onboarding5.png",
       title: "Nurture the Planet",
       description:
           "Turn waste into compost, track your sustainability score, and earn some rewards for every cycle",
