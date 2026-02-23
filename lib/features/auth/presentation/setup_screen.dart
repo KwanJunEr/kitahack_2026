@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:kitahack_2026/features/auth/presentation/signup_final_loading.dart';
+import 'package:kitahack_2026/features/home/presentation/home.dart';
 
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
@@ -44,6 +48,41 @@ class _SetupScreenState extends State<SetupScreen> {
     );
   }
 
+  Future<void> _finishSetup() async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+
+    /// Show the final loading screen
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const SignUpFinalLoadingScreen(),
+      ),
+    );
+
+    try {
+      /// Save the setup data
+      await FirebaseFirestore.instance.collection('userProfiles').doc(uid).update({
+        'livingType': livingType,
+        'experience': experience,
+        'timeAvailability': time,
+        'goals': goals.toList(),
+        'setupCompleted': true,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      /// Navigate to Home after saving
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    } catch (e) {
+      /// Error handling
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error saving profile: $e")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +94,7 @@ class _SetupScreenState extends State<SetupScreen> {
           children: [
             sectionTitle("Living Type", Icons.home),
             radioTile(
-              "Apartment",
+              "Apartment/Condo",
               livingType,
               (v) => setState(() => livingType = v),
             ),
@@ -125,9 +164,7 @@ class _SetupScreenState extends State<SetupScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  // TODO: Submit setup data
-                },
+                onPressed: _finishSetup,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0F6D6A),
                   padding: const EdgeInsets.symmetric(vertical: 16),
