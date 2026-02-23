@@ -40,12 +40,8 @@ class _SignUpFinalLoadingScreenState extends State<SignUpFinalLoadingScreen>
     if (_step < _messages.length - 1) {
       setState(() => _step++);
       Future.delayed(const Duration(seconds: 2), _nextStep);
-    } else {
-      // After final step, automatically navigate back or to next screen
-      Future.delayed(const Duration(seconds: 1), () {
-        Navigator.pop(context);
-      });
     }
+    // Don't navigate here - let the caller handle it
   }
 
   @override

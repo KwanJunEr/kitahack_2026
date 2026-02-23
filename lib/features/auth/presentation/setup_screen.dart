@@ -12,7 +12,7 @@ class SetupScreen extends StatefulWidget {
 }
 
 class _SetupScreenState extends State<SetupScreen> {
-  String livingType = "Apartment";
+  String livingType = "Apartment/Condo";
   String experience = "Beginner";
   String time = "Medium";
 
@@ -49,34 +49,43 @@ class _SetupScreenState extends State<SetupScreen> {
   }
 
   Future<void> _finishSetup() async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-
-    /// Show the final loading screen
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const SignUpFinalLoadingScreen(),
-      ),
-    );
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
 
     try {
-      /// Save the setup data
-      await FirebaseFirestore.instance.collection('userProfiles').doc(uid).update({
+      // Show loading screen
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const SignUpFinalLoadingScreen()),
+      );
+
+      // Wait for loading animation to complete (6 seconds for all steps)
+      await Future.delayed(const Duration(seconds: 7));
+
+      // Create or update Firestore document
+      await FirebaseFirestore.instance
+          .collection('userProfiles')
+          .doc(uid)
+          .set({
         'livingType': livingType,
         'experience': experience,
         'timeAvailability': time,
         'goals': goals.toList(),
         'setupCompleted': true,
         'updatedAt': FieldValue.serverTimestamp(),
-      });
+      }, SetOptions(merge: true));
 
-      /// Navigate to Home after saving
+      // Close loading screen and navigate to HomeScreen
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
     } catch (e) {
-      /// Error handling
+      if (!mounted) return;
+      // Try to close loading screen if still open
+      Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error saving profile: $e")),
       );
@@ -93,48 +102,20 @@ class _SetupScreenState extends State<SetupScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             sectionTitle("Living Type", Icons.home),
-            radioTile(
-              "Apartment/Condo",
-              livingType,
-              (v) => setState(() => livingType = v),
-            ),
-            radioTile(
-              "Landed house",
-              livingType,
-              (v) => setState(() => livingType = v),
-            ),
-
+            radioTile("Apartment/Condo", livingType, (v) => setState(() => livingType = v)),
+            radioTile("Landed house", livingType, (v) => setState(() => livingType = v)),
             const SizedBox(height: 20),
             sectionTitle("Experience Level", Icons.eco),
-            radioTile(
-              "Beginner",
-              experience,
-              (v) => setState(() => experience = v),
-            ),
-            radioTile(
-              "Intermediate",
-              experience,
-              (v) => setState(() => experience = v),
-            ),
-            radioTile(
-              "Expert",
-              experience,
-              (v) => setState(() => experience = v),
-            ),
-
+            radioTile("Beginner", experience, (v) => setState(() => experience = v)),
+            radioTile("Intermediate", experience, (v) => setState(() => experience = v)),
+            radioTile("Expert", experience, (v) => setState(() => experience = v)),
             const SizedBox(height: 20),
             sectionTitle("Time Availability", Icons.access_time),
-            radioTile(
-              "Low (≤15 min/day)",
-              time,
-              (v) => setState(() => time = v),
-            ),
+            radioTile("Low (≤15 min/day)", time, (v) => setState(() => time = v)),
             radioTile("Medium", time, (v) => setState(() => time = v)),
             radioTile("High", time, (v) => setState(() => time = v)),
-
             const SizedBox(height: 20),
             sectionTitle("Goals", Icons.flag),
-
             Wrap(
               spacing: 10,
               runSpacing: 10,
@@ -153,13 +134,10 @@ class _SetupScreenState extends State<SetupScreen> {
                     });
                   },
                   selectedColor: const Color(0xFF0F6D6A),
-                  labelStyle: TextStyle(
-                    color: selected ? Colors.white : Colors.black,
-                  ),
+                  labelStyle: TextStyle(color: selected ? Colors.white : Colors.black),
                 );
               }).toList(),
             ),
-
             const SizedBox(height: 30),
             SizedBox(
               width: double.infinity,
