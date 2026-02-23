@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kitahack_2026/features/auth/presentation/signup_loading_setup.dart';
 import 'setup_screen.dart';
@@ -10,25 +12,62 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final _addressController = TextEditingController();
+
   bool isLoading = false;
 
-  void _onSignUp() async {
+  Future<void> _onSignUp() async {
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Passwords do not match")));
+      return;
+    }
     setState(() => isLoading = true);
 
-    await Navigator.push(
+    Navigator.push(
       context,
-      PageRouteBuilder(
-        pageBuilder: (_, __, ___) => const SignUpLoadingScreen(),
-        transitionDuration: const Duration(milliseconds: 400),
-      ),
+      MaterialPageRoute(builder: (_) => const SignUpLoadingScreen()),
     );
 
-    setState(() => isLoading = false);
+    try {
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const SetupScreen()),
-    );
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(credential.user!.uid)
+          .set({
+            'name': _nameController.text.trim(),
+            'email': _emailController.text.trim(),
+            'address': _addressController.text.trim(),
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+
+      Navigator.pop(context);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const SetupScreen()),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message ?? "Sign up failed")));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("An unexpected error occurred")),
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
   }
 
   InputDecoration _input(String hint, IconData icon, {Widget? suffix}) {
@@ -74,8 +113,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             const SizedBox(height: 24),
 
-            const Text("Create Account",
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+            const Text(
+              "Create Account",
+              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
             const Text(
               "Join our sustainable community and start your green journey today.",
@@ -83,24 +124,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             const SizedBox(height: 24),
 
-            TextField(style: const TextStyle(color: Colors.black),decoration: _input("Full Name", Icons.person)),
-            const SizedBox(height: 14),
-            TextField(style: const TextStyle(color: Colors.black),decoration: _input("Email Address", Icons.email)),
-            const SizedBox(height: 14),
+            // Add controllers here
             TextField(
-              obscureText: true,
+              controller: _nameController,
               style: const TextStyle(color: Colors.black),
-              decoration:
-                  _input("Password", Icons.lock, suffix: const Icon(Icons.visibility)),
+              decoration: _input("Full Name", Icons.person),
             ),
             const SizedBox(height: 14),
             TextField(
+              controller: _emailController,
+              style: const TextStyle(color: Colors.black),
+              decoration: _input("Email Address", Icons.email),
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              style: const TextStyle(color: Colors.black),
+              decoration: _input(
+                "Password",
+                Icons.lock,
+                suffix: const Icon(Icons.visibility),
+              ),
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: _confirmPasswordController,
               obscureText: true,
               style: const TextStyle(color: Colors.black),
               decoration: _input("Confirm Password", Icons.lock_outline),
             ),
             const SizedBox(height: 14),
             TextField(
+              controller: _addressController,
               style: const TextStyle(color: Colors.black),
               decoration: _input("House Address", Icons.home),
               maxLines: 2,
@@ -115,10 +171,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   backgroundColor: const Color(0xFF0F6D6A),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30)),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                 ),
-                child: const Text("Sign Up",
-                   style: TextStyle(color: Colors.white),),
+                child: const Text(
+                  "Sign Up",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
           ],
