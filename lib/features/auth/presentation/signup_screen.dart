@@ -19,6 +19,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _addressController = TextEditingController();
 
   bool isLoading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   Future<void> _onSignUp() async {
     if (_passwordController.text != _confirmPasswordController.text) {
@@ -37,19 +39,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
     try {
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
-          );
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
 
       await FirebaseFirestore.instance
           .collection('users')
           .doc(credential.user!.uid)
           .set({
-            'name': _nameController.text.trim(),
-            'email': _emailController.text.trim(),
-            'address': _addressController.text.trim(),
-            'createdAt': FieldValue.serverTimestamp(),
-          });
+        'name': _nameController.text.trim(),
+        'email': _emailController.text.trim(),
+        'address': _addressController.text.trim(),
+        'createdAt': FieldValue.serverTimestamp(),
+      });
 
       Navigator.pop(context);
 
@@ -82,6 +84,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
         borderSide: BorderSide.none,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _addressController.dispose();
+    super.dispose();
   }
 
   @override
@@ -124,37 +136,69 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Add controllers here
+            // Name
             TextField(
               controller: _nameController,
               style: const TextStyle(color: Colors.black),
               decoration: _input("Full Name", Icons.person),
             ),
             const SizedBox(height: 14),
+
+            // Email
             TextField(
               controller: _emailController,
               style: const TextStyle(color: Colors.black),
               decoration: _input("Email Address", Icons.email),
             ),
             const SizedBox(height: 14),
+
+            // Password
             TextField(
               controller: _passwordController,
-              obscureText: true,
+              obscureText: _obscurePassword,
               style: const TextStyle(color: Colors.black),
               decoration: _input(
                 "Password",
                 Icons.lock,
-                suffix: const Icon(Icons.visibility),
+                suffix: IconButton(
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 14),
+
+            // Confirm Password
             TextField(
               controller: _confirmPasswordController,
-              obscureText: true,
+              obscureText: _obscureConfirmPassword,
               style: const TextStyle(color: Colors.black),
-              decoration: _input("Confirm Password", Icons.lock_outline),
+              decoration: _input(
+                "Confirm Password",
+                Icons.lock_outline,
+                suffix: IconButton(
+                  icon: Icon(
+                    _obscureConfirmPassword
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureConfirmPassword = !_obscureConfirmPassword;
+                    });
+                  },
+                ),
+              ),
             ),
             const SizedBox(height: 14),
+
+            // Address
             TextField(
               controller: _addressController,
               style: const TextStyle(color: Colors.black),
@@ -163,6 +207,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             const SizedBox(height: 24),
 
+            // Sign Up Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
