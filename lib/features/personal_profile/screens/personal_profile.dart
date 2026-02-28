@@ -98,6 +98,7 @@ class ProfileScreen extends StatelessWidget {
                   children: [
                     _menuTile(context, 'My Details', Icons.person, '/my_details'),
                     _menuTile(context, 'My Inventory', Icons.inventory, '/my_inventory'),
+                    _menuTile(context, 'My Learning', Icons.school, '/my_learning'),
                     _menuTile(context, 'Shop', Icons.store, '/shop'),
                     _menuTile(context, 'My Rewards', Icons.emoji_events, '/my_rewards'),
                     const SizedBox(height: 20),
