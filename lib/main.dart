@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:kitahack_2026/features/auth/presentation/signin_screen.dart';
 import 'package:kitahack_2026/features/auth/presentation/signup_screen.dart';
+import 'package:kitahack_2026/features/community/screens/community_main.dart';
 import 'package:kitahack_2026/features/home/presentation/home.dart';
 import 'package:kitahack_2026/features/onboarding/screens/onboarding_screen.dart';
 import 'package:kitahack_2026/features/personal_profile/screens/personal_profile.dart';
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => const ProfileScreen(),
         '/my_rewards': (context) => const RewardsScreen(),
         "/sustainability": (context) => const SustainabilityScreen(),
+        "/community": (context) => const CommunityScreen(),
       }
     );
   }
