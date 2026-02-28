@@ -164,38 +164,6 @@ Q1 2028
 
 ---
 
-## 📁 Project Structure
-
-```
-kitahack_2026/
-├── lib/
-│   ├── main.dart
-│   ├── screens/
-│   │   ├── welcome_screen.dart
-│   │   ├── garden_screen.dart
-│   │   ├── ar_analyzer_screen.dart
-│   │   ├── community_screen.dart
-│   │   └── sustainability_screen.dart
-│   ├── services/
-│   │   ├── gemini_service.dart
-│   │   ├── firestore_service.dart
-│   │   ├── vertex_ai_service.dart
-│   │   └── maps_service.dart
-│   ├── models/
-│   │   ├── plant_model.dart
-│   │   ├── user_model.dart
-│   │   └── diary_model.dart
-│   └── widgets/
-├── android/
-│   └── app/
-│       └── google-services.json
-├── assets/
-│   ├── images/
-│   └── crop_database/
-└── pubspec.yaml
-```
-
----
 
 
 
