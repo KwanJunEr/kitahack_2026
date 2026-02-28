@@ -5,6 +5,7 @@ import 'package:kitahack_2026/features/auth/presentation/signup_screen.dart';
 import 'package:kitahack_2026/features/home/presentation/home.dart';
 import 'package:kitahack_2026/features/onboarding/screens/onboarding_screen.dart';
 import 'package:kitahack_2026/features/personal_profile/screens/personal_profile.dart';
+import 'package:kitahack_2026/features/personal_profile/screens/rewards_screen.dart';
 import 'package:kitahack_2026/features/welcome/presentation/welcome_screen.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         '/sign-up' : (context) => const SignUpScreen(),
         '/home' : (context) => const HomeScreen(),
         '/profile': (context) => const ProfileScreen(),
+        '/my_rewards': (context) => const RewardsScreen(),
       }
     );
   }

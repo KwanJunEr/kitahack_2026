@@ -53,7 +53,7 @@ class ProfileScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Text(
-                      'PRO',
+                      '400XP',
                       style: TextStyle(color: Colors.white, fontSize: 10),
                     ),
                   ),
@@ -83,7 +83,7 @@ class ProfileScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _statCard('8', 'PLANTS GROWN', Icons.local_florist),
-                    _statCard('5', 'CONTRIBUTIONS', Icons.favorite),
+                    _statCard('5', 'COMMUNITY CONTRIBUTIONS', Icons.favorite),
                     _statCard('12kg', 'CO2 OFFSET', Icons.cloud),
                   ],
                 ),
