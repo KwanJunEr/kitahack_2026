@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: const [
                             Text(
-                              'Welcome Jonas',
+                              'Welcome Naruto',
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
