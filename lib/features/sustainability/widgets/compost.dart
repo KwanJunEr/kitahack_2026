@@ -1,17 +1,145 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
-class CompostTab extends StatelessWidget {
+class CompostTab extends StatefulWidget {
   const CompostTab({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final recentEntries = [
-      _CompostEntry(date: 'Oct 24', weight: '1.2kg', type: null, imagePlaceholderColor: const Color(0xFF4A7C59)),
-      _CompostEntry(date: 'Oct 22', weight: '0.8kg', type: null, imagePlaceholderColor: const Color(0xFF8B6914)),
-      _CompostEntry(date: 'Oct 19', weight: null, type: 'Turn', imagePlaceholderColor: const Color(0xFF3D6B3A)),
-      _CompostEntry(date: 'Oct 15', weight: '2.5kg', type: null, imagePlaceholderColor: const Color(0xFFA0C878)),
-    ];
+  State<CompostTab> createState() => _CompostTabState();
+}
 
+class _CompostTabState extends State<CompostTab> with TickerProviderStateMixin {
+  File? _selectedImage;
+  bool _isAnalyzing = false;
+  bool _showResults = false;
+
+  late AnimationController _pulseController;
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
+
+  final recentEntries = [
+    _CompostEntry(
+      date: 'Oct 24',
+      weight: '1.2kg',
+      type: null,
+      imagePlaceholderColor: const Color(0xFF4A7C59),
+    ),
+    _CompostEntry(
+      date: 'Oct 22',
+      weight: '0.8kg',
+      type: null,
+      imagePlaceholderColor: const Color(0xFF8B6914),
+    ),
+    _CompostEntry(
+      date: 'Oct 19',
+      weight: null,
+      type: 'Turn',
+      imagePlaceholderColor: const Color(0xFF3D6B3A),
+    ),
+    _CompostEntry(
+      date: 'Oct 15',
+      weight: '2.5kg',
+      type: null,
+      imagePlaceholderColor: const Color(0xFFA0C878),
+    ),
+  ];
+
+  final List<Map<String, String>> compostSteps = [
+    {
+      'step': '1',
+      'title': 'Collect Organic Waste',
+      'desc': 'Gather fruit scraps, vegetables, coffee grounds, and garden clippings.',
+    },
+    {
+      'step': '2',
+      'title': 'Chop Into Smaller Pieces',
+      'desc': 'Break larger items down to speed up the decomposition process.',
+    },
+    {
+      'step': '3',
+      'title': 'Layer Greens & Browns',
+      'desc': 'Alternate wet materials (greens) with dry materials (browns) in your bin.',
+    },
+    {
+      'step': '4',
+      'title': 'Keep It Moist',
+      'desc': 'The pile should feel like a wrung-out sponge — moist but not soggy.',
+    },
+    {
+      'step': '5',
+      'title': 'Turn Every 1–2 Weeks',
+      'desc': 'Aerate the pile regularly to speed up decomposition and prevent odors.',
+    },
+    {
+      'step': '6',
+      'title': 'Harvest Your Compost',
+      'desc': 'After 2–3 months, you\'ll have dark, crumbly, nutrient-rich compost.',
+    },
+  ];
+
+  final List<String> compostBenefits = [
+    'Reduces landfill waste',
+    'Enriches soil with nutrients',
+    'Improves soil structure and moisture retention',
+    'Reduces the need for chemical fertilizers',
+    'Supports plant growth and biodiversity',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
+
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _fadeAnimation = CurvedAnimation(parent: _fadeController, curve: Curves.easeIn);
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    _fadeController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+        _isAnalyzing = true;
+        _showResults = false;
+      });
+
+      // Hardcoded loading effect: 3 seconds then reveal results
+      await Future.delayed(const Duration(seconds: 3));
+
+      setState(() {
+        _isAnalyzing = false;
+        _showResults = true;
+      });
+      _fadeController.forward(from: 0);
+    }
+  }
+
+  void _resetImage() {
+    setState(() {
+      _selectedImage = null;
+      _isAnalyzing = false;
+      _showResults = false;
+    });
+    _fadeController.reset();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -74,7 +202,9 @@ class CompostTab extends StatelessWidget {
                         child: LinearProgressIndicator(
                           value: 0.45,
                           backgroundColor: Colors.grey[200],
-                          valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF1A6B5A)),
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            Color(0xFF1A6B5A),
+                          ),
                           minHeight: 6,
                         ),
                       ),
@@ -99,7 +229,7 @@ class CompostTab extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: _isAnalyzing ? null : () => _pickImage(ImageSource.camera),
               icon: const Icon(Icons.camera_alt_outlined, color: Colors.white),
               label: const Text(
                 'Take Photo of Pile',
@@ -111,6 +241,7 @@ class CompostTab extends StatelessWidget {
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF1A6B5A),
+                disabledBackgroundColor: const Color(0xFF1A6B5A).withOpacity(0.5),
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
@@ -123,7 +254,7 @@ class CompostTab extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
-              onPressed: () {},
+              onPressed: _isAnalyzing ? null : () => _pickImage(ImageSource.gallery),
               icon: const Icon(Icons.upload_file_outlined, color: Color(0xFF1A6B5A)),
               label: const Text(
                 'Upload from Gallery',
@@ -143,9 +274,145 @@ class CompostTab extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 20),
 
-          // Recent Entries
+          // ── Image Preview ──
+          if (_selectedImage != null) ...[
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.file(
+                    _selectedImage!,
+                    width: double.infinity,
+                    height: 220,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                // Reset button
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: GestureDetector(
+                    onTap: _resetImage,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.close, color: Colors.white, size: 18),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          // ── Loading State ──
+          if (_isAnalyzing) ...[
+            _AnalyzingCard(pulseController: _pulseController),
+            const SizedBox(height: 28),
+          ],
+
+          // ── Results: How to Make Compost ──
+          if (_showResults) ...[
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Result header badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFECF7F4),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFCCE5DE)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(Icons.check_circle, color: Color(0xFF1A6B5A), size: 18),
+                        SizedBox(width: 8),
+                        Text(
+                          'Analysis Complete • Compost Detected',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF1A6B5A),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // How to Make Compost
+                  const Text(
+                    'How to Make Compost',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 14),
+                  ...compostSteps.asMap().entries.map((entry) {
+                    final i = entry.key;
+                    final step = entry.value;
+                    return _StepCard(
+                      stepNumber: step['step']!,
+                      title: step['title']!,
+                      description: step['desc']!,
+                      delay: Duration(milliseconds: i * 80),
+                      fadeAnimation: _fadeAnimation,
+                    );
+                  }),
+
+                  const SizedBox(height: 24),
+
+                  // Benefits
+                  const Text(
+                    'Benefits of Composting',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  ...compostBenefits.map(
+                    (benefit) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFECF7F4),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.check,
+                              size: 14,
+                              color: Color(0xFF1A6B5A),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              benefit,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF1A1A1A),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                ],
+              ),
+            ),
+          ],
+
+          // ── Recent Entries (always shown) ──
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -171,7 +438,6 @@ class CompostTab extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -193,6 +459,191 @@ class CompostTab extends StatelessWidget {
     );
   }
 }
+
+// ── Analyzing Card ──────────────────────────────────────────────────────────
+
+class _AnalyzingCard extends StatelessWidget {
+  final AnimationController pulseController;
+  const _AnalyzingCard({required this.pulseController});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFCCE5DE), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          AnimatedBuilder(
+            animation: pulseController,
+            builder: (context, child) {
+              return Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color.lerp(
+                    const Color(0xFFECF7F4),
+                    const Color(0xFF1A6B5A).withOpacity(0.2),
+                    pulseController.value,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.eco_outlined,
+                  color: Color(0xFF1A6B5A),
+                  size: 30,
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 14),
+          const Text(
+            'Analyzing your compost pile...',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1A1A1A),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Identifying materials and generating your guide',
+            style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          _AnimatedLoadingDots(controller: pulseController),
+        ],
+      ),
+    );
+  }
+}
+
+class _AnimatedLoadingDots extends StatelessWidget {
+  final AnimationController controller;
+  const _AnimatedLoadingDots({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, _) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(3, (i) {
+            final offset = (controller.value + i * 0.33) % 1.0;
+            final scale = 0.6 + 0.4 * (offset < 0.5 ? offset * 2 : (1 - offset) * 2);
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              width: 8 * scale,
+              height: 8 * scale,
+              decoration: const BoxDecoration(
+                color: Color(0xFF1A6B5A),
+                shape: BoxShape.circle,
+              ),
+            );
+          }),
+        );
+      },
+    );
+  }
+}
+
+// ── Step Card ───────────────────────────────────────────────────────────────
+
+class _StepCard extends StatelessWidget {
+  final String stepNumber;
+  final String title;
+  final String description;
+  final Duration delay;
+  final Animation<double> fadeAnimation;
+
+  const _StepCard({
+    required this.stepNumber,
+    required this.title,
+    required this.description,
+    required this.delay,
+    required this.fadeAnimation,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 30,
+              height: 30,
+              decoration: const BoxDecoration(
+                color: Color(0xFF1A6B5A),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  stepNumber,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1A1A1A),
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    description,
+                    style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Supporting Widgets ──────────────────────────────────────────────────────
 
 class _StatCard extends StatelessWidget {
   final String label;

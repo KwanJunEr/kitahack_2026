@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             : 'Due: Tomorrow, 9:00 AM',
                         _reminders[title]!,
                       );
-                    }).toList(),
+                    }),
 
                     const SizedBox(height: 20),
 

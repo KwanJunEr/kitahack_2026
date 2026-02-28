@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kitahack_2026/features/sustainability/widgets/analytics.dart';
 import 'package:kitahack_2026/features/sustainability/widgets/checklisttab.dart';
 import 'package:kitahack_2026/features/sustainability/widgets/compost.dart';
+import 'package:kitahack_2026/widgets/custom_navigation_bar.dart'; // <-- Import your new navbar
 
 class SustainabilityScreen extends StatefulWidget {
   const SustainabilityScreen({super.key});
@@ -14,9 +15,8 @@ class _SustainabilityScreenState extends State<SustainabilityScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _currentTab = 0;
-  int _currentNavIndex = 2; // Sustainability is active
 
-  final List<String> _tabLabels = ['Checklist', 'Impact', 'Tips'];
+  final List<String> _tabLabels = ['Checklist', 'Impact', 'Analytics'];
 
   @override
   void initState() {
@@ -43,26 +43,6 @@ class _SustainabilityScreenState extends State<SustainabilityScreen>
         backgroundColor: const Color(0xFFF2F7F5),
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
-                  blurRadius: 6,
-                ),
-              ],
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, size: 16),
-              color: const Color(0xFF1A1A1A),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ),
-        ),
         title: const Text(
           'Sustainability',
           style: TextStyle(
@@ -76,7 +56,8 @@ class _SustainabilityScreenState extends State<SustainabilityScreen>
           Padding(
             padding: const EdgeInsets.only(right: 12),
             child: IconButton(
-              icon: const Icon(Icons.share_outlined, color: Color(0xFF1A1A1A)),
+              icon: const Icon(Icons.share_outlined,
+                  color: Color(0xFF1A1A1A)),
               onPressed: () {},
             ),
           ),
@@ -101,10 +82,9 @@ class _SustainabilityScreenState extends State<SustainabilityScreen>
           AnalyticsTab(),
         ],
       ),
-      bottomNavigationBar: _BottomNavBar(
-        currentIndex: _currentNavIndex,
-        onTap: (i) => setState(() => _currentNavIndex = i),
-      ),
+
+      // ✅ Replaced old navbar with your new widget
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }
@@ -169,76 +149,4 @@ class _CustomTabBar extends StatelessWidget {
       ),
     );
   }
-}
-
-class _BottomNavBar extends StatelessWidget {
-  final int currentIndex;
-  final ValueChanged<int> onTap;
-
-  const _BottomNavBar({required this.currentIndex, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final items = [
-      _NavItem(icon: Icons.home_outlined, activeIcon: Icons.home, label: 'HOME'),
-      _NavItem(icon: Icons.local_florist_outlined, activeIcon: Icons.local_florist, label: 'GARDEN'),
-      _NavItem(icon: Icons.eco_outlined, activeIcon: Icons.eco, label: 'SUSTAINABILITY'),
-      _NavItem(icon: Icons.person_outlined, activeIcon: Icons.person, label: 'PROFILE'),
-    ];
-
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0xFFEEEEEE), width: 1)),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: items.asMap().entries.map((entry) {
-          final i = entry.key;
-          final item = entry.value;
-          final isActive = currentIndex == i;
-
-          return GestureDetector(
-            onTap: () => onTap(i),
-            behavior: HitTestBehavior.opaque,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    isActive ? item.activeIcon : item.icon,
-                    color: isActive
-                        ? const Color(0xFF1A6B5A)
-                        : const Color(0xFF999999),
-                    size: 24,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    item.label,
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: isActive
-                          ? const Color(0xFF1A6B5A)
-                          : const Color(0xFF999999),
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-}
-
-class _NavItem {
-  final IconData icon;
-  final IconData activeIcon;
-  final String label;
-  const _NavItem({required this.icon, required this.activeIcon, required this.label});
 }
