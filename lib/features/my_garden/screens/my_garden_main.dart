@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kitahack_2026/features/my_garden/screens/plant_details.dart';
 import 'package:kitahack_2026/widgets/custom_navigation_bar.dart';
+
 
 class MyGardenScreen extends StatelessWidget {
   const MyGardenScreen({super.key});
@@ -26,7 +28,7 @@ class MyGardenScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F7F6),
 
-      /// APP BAR
+      /// ================= APP BAR =================
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -51,7 +53,7 @@ class MyGardenScreen extends StatelessWidget {
         ],
       ),
 
-      /// BODY — fully vertically scrollable
+      /// ================= BODY =================
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(bottom: 100),
         child: Column(
@@ -59,7 +61,7 @@ class MyGardenScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 20),
 
-            /// STAT CARDS — horizontally scrollable
+            /// ===== STAT CARDS =====
             SizedBox(
               height: 110,
               child: ListView(
@@ -79,7 +81,7 @@ class MyGardenScreen extends StatelessWidget {
 
             const SizedBox(height: 28),
 
-            /// GROWING NOW HEADER
+            /// ===== HEADER =====
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -92,7 +94,9 @@ class MyGardenScreen extends StatelessWidget {
                   Text(
                     "View History",
                     style: TextStyle(
-                        color: Color(0xFF0F6D6A), fontWeight: FontWeight.w600),
+                      color: Color(0xFF0F6D6A),
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -100,7 +104,7 @@ class MyGardenScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            /// PLANT LIST
+            /// ===== PLANT LIST =====
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -108,8 +112,10 @@ class MyGardenScreen extends StatelessWidget {
               itemCount: plants.length,
               itemBuilder: (context, index) {
                 final plant = plants[index];
+
                 return GestureDetector(
                   onTap: () {
+                    /// 🚀 NAVIGATE & PASS DATA
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -137,7 +143,7 @@ class MyGardenScreen extends StatelessWidget {
         ),
       ),
 
-      /// FLOATING BUTTON
+      /// ================= FAB =================
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: const Color(0xFF0F6D6A),
         onPressed: () {},
@@ -145,7 +151,7 @@ class MyGardenScreen extends StatelessWidget {
         label: const Text("Add New Plant"),
       ),
 
-      /// BOTTOM NAV BAR
+      /// ================= BOTTOM NAV =================
       bottomNavigationBar: const BottomNavBar(),
     );
   }
@@ -284,62 +290,6 @@ class _PlantTile extends StatelessWidget {
             ),
           )
         ],
-      ),
-    );
-  }
-}
-
-/// ================= DETAIL SCREEN =================
-class PlantDetailScreen extends StatelessWidget {
-  final String name;
-  final String subtitle;
-  final String image;
-  final String date;
-  final String status;
-
-  const PlantDetailScreen({
-    super.key,
-    required this.name,
-    required this.subtitle,
-    required this.image,
-    required this.date,
-    required this.status,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(name),
-        backgroundColor: const Color(0xFF0F6D6A),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.asset(
-                image,
-                height: 220,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              name,
-              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(subtitle),
-            const SizedBox(height: 16),
-            Text("Planted on $date"),
-            const SizedBox(height: 8),
-            Text("Status: $status"),
-          ],
-        ),
       ),
     );
   }
