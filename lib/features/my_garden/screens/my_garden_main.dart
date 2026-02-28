@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kitahack_2026/features/kickstart_plant/screen/addplant.dart';
 import 'package:kitahack_2026/features/my_garden/screens/plant_details.dart';
 import 'package:kitahack_2026/widgets/custom_navigation_bar.dart';
 
@@ -146,7 +147,9 @@ class MyGardenScreen extends StatelessWidget {
       /// ================= FAB =================
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: const Color(0xFF0F6D6A),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const AddPlantWizard()));
+        },
         icon: const Icon(Icons.add),
         label: const Text("Add New Plant"),
       ),
